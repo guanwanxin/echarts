@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>加载数据并分组</title>
+		<script src="js/jquery-1.11.1.js"></script>
+		<!-- 引入 ECharts 文件 -->
+		<script src="js/echarts.min.js"></script>
+		<style>
+			/* #div01{
+				width: 45%;
+				height: 500px;
+				border: 1px solid black;
+			} */
+			
+			
+		</style>
+
+
+	</head>
+	<body>
+		<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+		<div id="div01" style="width: 45%;height: 400px;border: 1px solid black;"></div>
+
+	</body>
+	<script type="text/javascript">
+		$(function() {
+ 
+			var dataList = new Array ({
+				"name": "衬衫",
+				"num": 5,
+			}, {
+				"name": "羊毛衫",
+				"num": 25,
+			}, {
+				"name": "雪纺衫",
+				"num": 36,
+			}, {
+				"name": "裤子",
+				"num": 10,
+			}, {
+				"name": "高跟鞋",
+				"num": 20,
+			}, {
+				"name": "袜子",
+				"num": 28,
+			});
+
+			var str0 = dataList[0];
+			// console.log(str0);
+
+			var str1 = '{ "name": "cxh", "sex": "man" }';
+			// console.log(JSON.parse(str1).name);
+			
+			var str2 = { "name": "袜子", "num": 28 };
+			// console.log(str2.name);
+			
+			var nameArr=new Array(dataList.length);
+			var numArr=new Array(dataList.length);
+			for (var i = 0; i < dataList.length; i++) {
+				// console.log(dataList[i]);
+				// console.log(dataList[i].name+","+dataList[i].num);
+				nameArr[i] = dataList[i].name;
+				numArr[i] = dataList[i].num;
+			}
+			console.log("nameArr=" + nameArr);
+			console.log("numArr=" + numArr); 
+
+
+			//数据数组
+			// var nameArr= ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"];
+			// var numArr= [5, 20, 36, 10, 10, 20];
+			
+			// var nameArr= new Array("衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子");
+			// var numArr= new Array(5, 20, 36, 10, 10, 20);
+
+			// 基于准备好的dom，初始化echarts实例
+			var myChart = echarts.init(document.getElementById('div01'));
+
+			// 指定图表的配置项和数据
+			var option = {
+				title: {
+					text: 'ECharts 入门示例'
+				},
+				tooltip: {},
+				legend: {
+					data: ['销量']
+				},
+				xAxis: {
+					//data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
+					data: nameArr,
+				},
+				yAxis: {},
+				series: [{
+					name: '销量',
+					type: 'bar',
+					//data: [5, 20, 36, 10, 10, 20],
+					data: numArr
+				}]
+			};
+
+			// 使用刚指定的配置项和数据显示图表。
+			myChart.setOption(option);
+
+
+		});
+	</script>
+</html>

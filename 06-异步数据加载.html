@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>异步加载数据</title>
+		<script src="js/echarts.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/jquery-1.11.1.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div id="div01" style="width: 500px;height: 300px;">
+		</div>
+	</body>
+	<script type="text/javascript">
+		var myChart = echarts.init(document.getElementById("div01"));
+		$(function() {
+			// var myChart;
+			// var myChart = echarts.init(document.getElementById("div01"));
+			var data;
+			var categories;
+			var option;
+			queryData();
+		});
+
+		function initdData(data) {
+			// 初始 option
+			option = {
+				title: {
+					text: '异步数据加载示例'
+				},
+				tooltip: {},
+				legend: {
+					data: ['销量']
+				},
+				xAxis: {
+					data: data.categories
+				},
+				yAxis: {},
+				series: [{
+					name: '销量',
+					type: 'bar',
+					data: data.data
+				}]
+			};
+			return option;
+		};
+
+		function queryData() {
+			$.ajax({
+				type: "GET",
+				url: "json/json01.json",
+				dataType: "json",
+				success: function(data) {
+					console.log(data.categories);
+					console.log(data.data);
+					// data = data.data;
+					// categories = data.categories;
+					// console.log(option);
+					// myChart.dispose();
+					option = initdData(data);
+					// myChart.setOption(option);
+					setTimeout(function(){
+						myChart.setOption(option);
+					},3000);
+				},
+				error:function (XMLHttpRequest, textStatus, errorThrown) {
+					// 通常 textStatus 和 errorThrown 之中
+					// 只有一个会包含信息
+					//this; // 调用本次AJAX请求时传递的options参数
+					console.log(XMLHttpRequest);
+					console.log(textStatus);
+					console.log(errorThrown);
+				},
+				beforeSend: function(XMLHttpRequest) {
+					console.log("beforeSend");
+					myChart.showLoading();
+				},
+				complete: function(XMLHttpRequest, textStatus) {
+					console.log("complete");
+					setTimeout(function(){
+						myChart.hideLoading();
+					},3000);
+					// myChart.hideLoading();
+				},
+			});
+		}
+	</script>
+</html>
