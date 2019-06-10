@@ -186,7 +186,7 @@
                 });
             }
         }
-        console.log(res);
+        // console.log(res);
         return res;
     };
 
@@ -229,7 +229,7 @@
                     show: true,
                     period: 6,
                     trailLength: 0,
-                    symbol: planePath,
+                    symbol: planePath,//可以变为：'circle'，看看效果
                     symbolSize: 15
                 },
                 lineStyle: {
@@ -242,9 +242,10 @@
                 },
                 data: convertData(item[1])
             },
+            //光晕小圆圈
             {
                 name: item[0] + ' Top10',
-                type: 'effectScatter',
+                type: 'effectScatter',//带有涟漪特效动画的散点（气泡）图。利用动画特效可以将某些想要突出的数据进行视觉突出。
                 coordinateSystem: 'geo',
                 zlevel: 2,
                 rippleEffect: {
@@ -258,6 +259,7 @@
                     }
                 },
                 symbolSize: function (val) {
+                    console.log(val);
                     return val[2] / 8;
                 },
                 itemStyle: {
