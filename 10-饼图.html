@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="js/jquery-1.11.1.js"></script>
+    <!-- 引入 ECharts 文件 -->
+    <script src="js/echarts.min.js"></script>
+    <style type="text/css">
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden
+        }
+    </style>
+
+</head>
+<body>
+<div style="height:33% ; width:100% ;margin-top: 20px; float:left">
+    <div style="width:50% ; height:100% ;float:left; ">
+        <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+        <div id="main1" style="width: 100% ;height:100% ;border: 1px solid red;background-color: #7afab2;"></div>
+    </div>
+</div>
+
+<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+<!--<div id="div01" style="width: 800px;height: 400px;border: 1px solid black;"></div>-->
+
+</body>
+<script type="text/javascript">
+    $(function () {
+        var xData = ["新国际网站_英国", "新国际网站_韩国", "B2C新国际网站"];
+        var yData = [20, 30, 50];
+        // var tooltipData = [{"新国际网站_英国": [{"新国际_英国_机票": "15,15"}, {"新国际_英国_有偿选座": "5,2"}]},
+        //     {"新国际网站_韩国": [{"新国际_韩国_机票": "12,7"}, {"新国际_韩国_机票+选座": "18,1"}]},
+        //     {"B2C新国际网站": [{"新B2C国际机票": "50,20"}]}];
+
+        var tooltipData2 = [{"新国际网站_英国": [{"新国际_英国_机票": "15,15"}, {"新国际_英国_有偿选座": "5,2"}]}];
+
+        var tooltipData = [{
+            payChannleName: "新国际网站_英国", value: [{productName: "新国际_英国_机票", amountAndcount: "15,15"},
+                {productName: "新国际_英国_有偿选座", amountAndcount: "5,2"}]
+        },
+            {
+                payChannleName: "新国际网站_韩国", value: [{productName: "新国际_韩国_机票", amountAndcount: "11,7"},
+                    {productName: "新国际_韩国_机票+选座", amountAndcount: "19,1"}]
+            },
+            {payChannleName: "B2C新国际网站", value: [{productName: "新B2C国际机票", amountAndcount: "50,20"}]}];
+
+        // var seriesData = [{value: 20, name: '新国际网站_英国'}, {value: 30, name: '新国际网站_韩国'}, {value: 50, name: 'B2C新国际网站'}];
+        var seriesData = new Array();
+        for (var i = 0; i < xData.length; i++) {
+            var seriesObj = {};
+            seriesObj.value = yData[i];
+            seriesObj.name = xData[i];
+            seriesData[i] = seriesObj;
+        }
+        console.log(seriesData);
+
+
+        var str = "<div tyle='text-align: left;'><p>支付宝当面付：5万笔，占比：20%</p><p>支付宝网管：10万笔数，占比：30%</p><p/>支付宝APP：15万笔数，占比：50%</p></div>";
+
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main1'));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '全渠道交易笔数汇总'
+            },
+
+            //提示信息
+            tooltip: {
+                trigger: 'item',
+                //a 系列名称，b 数据项名称，c 数值，d 百分比
+                // formatter: "{b}交易笔数：{c}万笔 ，占比：{d}%"
+                formatter: function (params) {
+                    console.log("tooltip.formatter.params=" + params.name);
+                    var tooltipHtml = params.name + "交易金额：" + params.value + "万元 ，占比：" + params.percent + "%";
+                    tooltipHtml += '<table>';
+                    for (var i = 0; i < tooltipData.length; i++) {
+
+                        if (params.name == tooltipData[i].payChannleName) {
+                            var productArr = tooltipData[i].value;
+                            for (var j = 0; j < productArr.length; j++) {
+                                var productName = productArr[j].productName;
+                                var amountAndcount = parseInt(productArr[j].amountAndcount.split(",")[0]);
+                                console.log("amountAndcount=" + amountAndcount);
+                                tooltipHtml += '<tr><td style="text-align: right;">' + productName + '：</td>' +
+                                    '<td>' + amountAndcount + '</td><td>万元</td>' +
+                                    '<td>，占比：</td><td>' + parseInt((amountAndcount / params.value) * 100) + '%</td></tr>';
+                            }
+                        }
+                    }
+                    tooltipHtml += '</table>';
+                    console.log("tooltipHtmls=" + tooltipHtml);
+
+                    return tooltipHtml;
+                }
+            },
+
+            //图例
+            legend: {
+                orient: 'vertical',
+                //formatter: '{name}：{name}.value',
+                formatter: function (name, value) {
+                    // var total = 0;
+                    var amount = 0;
+                    for (var i = 0, l = seriesData.length; i < l; i++) {
+                        // total += seriesData[i].value;
+                        if (seriesData[i].name == name) {
+                            amount = seriesData[i].value;
+                        }
+                    }
+                    // console.log("legend.formatter.name=" + name);
+                    return name + ' : ' + amount + '（万元）';
+                },
+                x: 'right',
+                padding: [
+                    50,  // 上
+                    50, // 右
+                    50,  // 下
+                    10, // 左
+                ]
+            },
+
+            series: {
+                type: 'pie',
+                radius: '55%',
+                data: seriesData,
+
+                // 在series中添加itemStyle即可直观显示饼型数值
+                itemStyle: {
+                    normal: {
+                        label: {
+                            show: true,
+                            formatter: '{b}({d}%)'
+                        },
+                        labelLine: {
+                            show: true
+                        }
+                    }
+                },
+            }
+        }
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+
+
+    });
+</script>
+</html>
